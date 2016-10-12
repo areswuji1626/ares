@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.wuji1626.framework.domain.User"> 
+	
+	<resultMap type="com.wuji1626.framework.support.user.domain.User" id="resultListUser">
+		<id column="uid" property="uid" />
+		<result column="user_id" property="user_id" />
+		<result column="user_name" property="user_name" />
+		<result column="user_show_name" property="user_show_name" />
+		<result column="user_password" property="user_password" />
+	</resultMap>
+	
+	<select id="queryById" resultType="com.wuji1626.framework.support.user.domain.User" parameterType="int">
+		SELECT
+		user_id,
+		user_name,
+		user_show_name,
+		user_password
+		FROM t_user
+		WHERE user_name = #{id}
+	</select>
+
+	<select id="queryAll" resultType="com.wuji1626.framework.support.user.domain.User">
+		select user_id,user_name, user_show_name, user_password,user_status,date_format(user_effect_start,'%Y-%m-%d') user_effect_start,date_format(user_effect_end,'%Y-%m-%d') user_effect_end,user_type from user_info
+	</select>
+	
+	<select id="queryByPage" resultType="com.wuji1626.framework.support.user.domain.User">
+		select user_id,user_name, user_show_name, user_password,user_status,date_format(user_effect_start,'%Y-%m-%d') user_effect_start,date_format(user_effect_end,'%Y-%m-%d') user_effect_end,user_type from user_info limit (#{current_page}-1)*#{page_size},#{page_size}
+	</select>
+	
+	<insert id="insertUser" parameterType="com.wuji1626.framework.support.user.domain.User" >
+	    insert into t_user (user_id, user_name, user_show_name, user_password, user_status, user_effect_start, user_effect_end,user_type)
+	      values (#{user_id},#{user_name},#{user_show_name},#{user_password},#{user_status},#{user_effect_start},#{user_effect_end},#{user_type})
+	</insert>
+	
+</mapper>

@@ -1,0 +1,15 @@
+td {font-size:10px;}
+th {font-size:10px;}
+label {font-size:10px;}
+.smallfont {font-size:10px;}
+.leftfloat {
+	float:left;
+}
+.pagelengthstyle{
+	margin-top:3px;
+	margin-right:20px;
+}
+.pagestyle{
+	font-size:10px;
+}
+.rightfloat {float:right;}

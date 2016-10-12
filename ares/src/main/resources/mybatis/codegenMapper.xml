@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuji1626.framework.domain.CodeGen">
+    <insert id="insertDataSource" parameterType="com.wuji1626.framework.codegen.domain.DataSourceInfo">
+        <selectKey order="AFTER" keyProperty="ds_id" resultType="java.lang.String">
+    	SELECT ds_id from datasource order by modify_time limit 1;
+  		</selectKey>
+	    insert into datasource (ds_id, ds_name, ds_type, ds_desc, ds_url, ds_user, ds_password, create_time, modify_time, create_user_id, modify_user_id)
+	      values (uuid(),#{ds_name},#{ds_type},#{ds_desc},#{ds_url},#{ds_user},#{ds_password},sysdate(),sysdate(),#{create_user_id},#{modify_user_id})
+	</insert>
+	<select id="listDataSource" resultType="com.wuji1626.framework.codegen.domain.DataSourceInfo">
+		select ds_id,ds_name,ds_type,ds_url,ds_desc,ds_user,ds_password,date_format(create_time,'%Y-%m-%d') create_time,
+			date_format(modify_time,'%Y-%m-%d') modify_time,create_user_id,modify_user_id from datasource	    
+	</select>
+</mapper>
