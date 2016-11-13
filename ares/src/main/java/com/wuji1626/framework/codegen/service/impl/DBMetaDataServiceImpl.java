@@ -359,7 +359,7 @@ public class DBMetaDataServiceImpl implements DBMetaDataService {
 			PreparedStatement pst = conn.prepareStatement(MYSQL_GET_COLUMNS_SQL);//准备执行语句
 			pst.setString(1, tab.getTable_name());
 			ResultSet rs = pst.executeQuery();
-			rs.first();
+			rs.beforeFirst();
 			while(rs.next()){
 				ColumnInfo columnInfo = new ColumnInfo();
 				columnInfo.setTable_name(rs.getString(1));

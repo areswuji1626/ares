@@ -9,6 +9,7 @@ public class CommonConstant {
 	
 	public static final String NEW_LINE = "\n";
 	public static final String FILESYS_SEPERATOR = "//";
+	public static final String CONNECTOR = "%||%";
 	
 	public static final String OS = "os";
 	
@@ -32,11 +33,20 @@ public class CommonConstant {
 	public static final String ORACLE_TEST_SQL = "select 1 from dual";
 	
 	// Generate Type
-	public static final String BEAN_OUTPUT_TYPE = "bean";
+	public static final String BEAN_OUTPUT_TYPE = "domain";
 	public static final String MAPPER_OUTPUT_TYPE = "mapper";
+	public static final String DAO_OUTPUT_TYPE = "dao";
+	public static final String DAO_IMPL_OUTPUT_TYPE = "daoimpl";
+	
+	public static final String IMPL_PATH = "impl";
+	
+	// Order Type
+	public static final String DESC = "desc";
+	public static final String ASC = "asc";
 	
 	// ORACLE Data Type
 	public static final String DATE_ORACLE_DATA_TYPE = "Date";
 	
 	public static final String DATE_JAVA_UTIL = "java.util.Date";
+	
 }

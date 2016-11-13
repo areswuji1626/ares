@@ -2,6 +2,9 @@ package com.wuji1626.framework.result;
 
 import java.util.List;
 
+import com.wuji1626.framework.constant.CommonConstant;
+import com.wuji1626.framework.utils.ValidateUtil;
+
 public class Result<T> {
 
 	private String status;
@@ -39,5 +42,20 @@ public class Result<T> {
 	}
 	public void setMsg(String msg) {
 		this.msg = msg;
+	}
+	
+	public void appendErrorCode(String errorCode){
+		if(ValidateUtil.isBlank(this.errorCode)){
+			this.errorCode = errorCode;
+		}else{
+			this.errorCode = this.errorCode + CommonConstant.CONNECTOR + errorCode;
+		}
+	}
+	public void appendErrorMsg(String errorMsg){
+		if(ValidateUtil.isBlank(this.msg)){
+			this.msg = errorMsg;
+		}else{
+			this.msg = this.msg + CommonConstant.CONNECTOR + errorMsg;
+		}
 	}
 }

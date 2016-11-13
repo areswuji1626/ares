@@ -181,7 +181,7 @@ public class CommonUtil {
     	File dir =new File(path);    
     	//如果文件夹不存在则创建    
     	if  (!dir .exists()  && !dir .isDirectory()){       
-    	    dir.mkdir();    
+    	    dir.mkdirs();    
     	}
     }
     public static void makeFileOrDirExist(String fileName){
@@ -189,7 +189,7 @@ public class CommonUtil {
     	File dir =new File(path);    
     	//如果文件夹不存在则创建    
     	if  (!dir .exists()  && !dir .isDirectory()){       
-    	    dir.mkdir();    
+    	    dir.mkdirs();    
     	}
     	File file=new File(fileName);    
     	if(!file.exists()) {    

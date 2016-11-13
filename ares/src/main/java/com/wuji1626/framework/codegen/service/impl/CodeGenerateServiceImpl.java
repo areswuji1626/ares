@@ -20,9 +20,12 @@ import com.wuji1626.framework.codegen.domain.FieldInfo;
 import com.wuji1626.framework.codegen.domain.GenerateConfig;
 import com.wuji1626.framework.codegen.service.CodeGenerateService;
 import com.wuji1626.framework.codegen.service.DBMetaDataService;
+import com.wuji1626.framework.codegen.service.GenerateConfigService;
 import com.wuji1626.framework.constant.CommonConstant;
 import com.wuji1626.framework.constant.ErrorCode;
 import com.wuji1626.framework.result.Result;
+import com.wuji1626.framework.utils.CommonUtil;
+import com.wuji1626.framework.utils.StringUtil;
 import com.wuji1626.framework.utils.ValidateUtil;
 
 import freemarker.template.Configuration;
@@ -35,28 +38,32 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
 	@Autowired
 	DBMetaDataService metaService;
+	@Autowired
+	GenerateConfigService configService;
+	
 	@Override
 	public Result<String> generateBean(GenerateConfig config) {
 		// TODO Auto-generated method stub
 	    Result<String> res = new Result<String>();
-	    config.setOutputType("bean");
+	    config.setOutputType(CommonConstant.BEAN_OUTPUT_TYPE);
 
-        //建立数据模型（Map）  
+        //create data model（Map）  
         Map<String, Object> root = new HashMap<String, Object>();  
         Result<FieldInfo> fieldRes = convertDBColumn2Code(config.getDs(),config.getColumnList());
         Result<String> importRes = metaService.getImportList(fieldRes.getResultSet(),config);
-        root.put("package", config.getPackageName()+".domain");  
+        // entity's package specify
+        root.put("package", config.getPackageName());  
         root.put("entityName", config.getEntityName());  
         root.put("fieldList", fieldRes.getResultSet());
         root.put("importPackageList", importRes.getResultSet());
-	        //获取输出流（指定到控制台（标准输出））  
+	        //get output stream with std io  
         if(ValidateUtil.isBlank(config.getOutputPath())){
 			res.setStatus(CommonConstant.FAIL_ST);
 			res.setErrorCode(ErrorCode.NO_OUTPUT_PATH);
 			res.setMsg(ErrorCode.NO_OUTPUT_PATH_MSG);
 			return res;
         }
-	    res = codeGenerate("bean", root, config);
+	    res = codeGenerate(root, config, null);
 		return res;  
          
 	}
@@ -65,15 +72,15 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 	public Result<String> generateMyBatisMapper(GenerateConfig config) {
 		// TODO Auto-generated method stub
 	    Result<String> res = new Result<String>();
-	    config.setOutputType("mapper");
+	    config.setOutputType(CommonConstant.MAPPER_OUTPUT_TYPE);
 	    
 	    Map<String, Object> root = new HashMap<String, Object>();  
         Result<FieldInfo> fieldRes = convertDBColumn2Code(config.getDs(),config.getColumnList());
         root.put("package", config.getPackageName());  
         root.put("entityName", config.getEntityName());  
         root.put("fieldsStr", convertFieldsStr(fieldRes.getResultSet()));
-        root.put("orderStr", convertColumnsStr(config.getOrderColumnList()));
-        // 为保持代码风格一致，将表名小写
+        root.put("orderStr", convertOrderStr(configService.getOrderFieldList(config)));
+        // to keep style, table's name is lowcase
         root.put("tab", config.getTab());
         //获取输出流（指定到控制台（标准输出））  
 //        Writer out = new FileWriter(new File("D:\\Searchcolumnconfig.java"));
@@ -83,25 +90,84 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 			res.setMsg(ErrorCode.NO_OUTPUT_PATH_MSG);
 			return res;
         }
-        res = codeGenerate("mapper", root,config);
+        res = codeGenerate(root,config, null);
         
         return res;
         
 	}
+	
+
+	@Override
+	public Result<String> generateDao(GenerateConfig config) {
+		// TODO Auto-generated method stub
+	    Result<String> res = new Result<String>();
+	    config.setOutputType(CommonConstant.DAO_OUTPUT_TYPE);
+
+        //create data model（Map）  
+        Map<String, Object> root = new HashMap<String, Object>();  
+//        Result<FieldInfo> fieldRes = convertDBColumn2Code(config.getDs(),config.getColumnList());
+//        Result<String> importRes = metaService.getImportList(fieldRes.getResultSet(),config);
+        // entity's package specify
+        root.put("package", config.getPackageName());  
+        root.put("entityName", config.getEntityName());  
+//        root.put("fieldList", fieldRes.getResultSet());
+//        root.put("importPackageList", importRes.getResultSet());
+	        //get output stream with std io  
+        if(ValidateUtil.isBlank(config.getOutputPath())){
+			res.setStatus(CommonConstant.FAIL_ST);
+			res.setErrorCode(ErrorCode.NO_OUTPUT_PATH);
+			res.setMsg(ErrorCode.NO_OUTPUT_PATH_MSG);
+			return res;
+        }
+	    Result<String> daoRes = codeGenerate(root, config, null);
+	    config.setOutputType(CommonConstant.DAO_IMPL_OUTPUT_TYPE);
+	    Result<String> daoImplRes = codeGenerate(root, config, CommonConstant.IMPL_PATH);
+	    
+	    if(daoRes.getStatus().equals(CommonConstant.SUCCESS_ST)||
+	    		daoImplRes.getStatus().equals(CommonConstant.SUCCESS_ST)){
+	    	res.setStatus(CommonConstant.SUCCESS_ST);
+	    }else{
+	    	if(daoRes.getStatus().equals(CommonConstant.FAIL_ST)){
+	    		res.appendErrorCode(daoRes.getErrorCode());
+	    		res.appendErrorMsg(daoRes.getMsg());
+	    	}
+	    	if(daoImplRes.getStatus().equals(CommonConstant.FAIL_ST)){
+	    		res.appendErrorCode(daoImplRes.getErrorCode());
+	    		res.appendErrorMsg(daoImplRes.getMsg());
+	    	}
+	    	res.setStatus(CommonConstant.FAIL_ST);
+	    }
+		return res;  
+         
+	}
+	
+	
 	protected String convertFieldsStr(List<FieldInfo> cols){
 		StringBuffer buf = new StringBuffer();
 		for(FieldInfo col:cols){
+			buf.append(col.getColumn_name()+" ");
 			buf.append(col.getField_name()+",");
 		}
 		return buf.substring(0,buf.length()-1);
 	}
 	protected String convertColumnsStr(List<ColumnInfo> cols){
 		StringBuffer buf = new StringBuffer();
-		if(cols == null){
+		if(cols == null || cols.size() == 0){
 			return null;
 		}
 		for(ColumnInfo col:cols){
 			buf.append(col.getColumn_name()+",");
+		}
+		return buf.substring(0,buf.length()-1);
+	}
+	protected String convertOrderStr(List<ColumnInfo> cols){
+		StringBuffer buf = new StringBuffer();
+		if(cols == null || cols.size() == 0){
+			return null;
+		}
+		for(ColumnInfo col:cols){
+			buf.append(col.getColumn_name() +" ");
+			buf.append(col.getOrder_flg()+",");
 		}
 		return buf.substring(0,buf.length()-1);
 	}
@@ -110,13 +176,28 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 		List<FieldInfo> fieldList = new ArrayList<FieldInfo>();
 		for(ColumnInfo column:list){
 			FieldInfo field = new FieldInfo();
-			field.setField_name(column.getColumn_name().toLowerCase());
+			// if column name contains '_', convert field name to CamelCase
+			if(column.getColumn_name().contains("_")){
+				String[] elements = column.getColumn_name().split("_");
+				StringBuffer buf = new StringBuffer();
+				for(String elem:elements){
+					buf.append(StringUtil.makeInitialCharacterUpperCase(elem));
+				}
+				field.setField_name(StringUtil.makeInitialCharaterLowerCase(buf.toString()));
+			// else make the field initial charater lowercase
+			}else{
+				field.setField_name(column.getColumn_name().toLowerCase());
+			}
+			field.setColumn_name(column.getColumn_name());
+			// ORACLE DS
 			if(ds.getDs_type().equals(CommonConstant.ORACLE_DS)){
 				field.setData_type(convertOracleDataType(column.getData_type()));
+				
+			// MySQL DS
 			}else{
 				field.setData_type(convertMySQLDataType(column.getData_type()));
 			}
-			field.setSetter_getter_name(convertFieldName2SetterGetterName(column.getColumn_name()));
+			field.setSetter_getter_name(convertFieldName2SetterGetterName(field.getField_name()));
 			field.setComments(column.getComments());
 			fieldList.add(field);
 		}
@@ -148,28 +229,39 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 				return "long";
 			case "date":
 				return "Date";
+			case "datetime":
+				return "Date";
 			default:
 				return "void";
 		}
 	}
 	public String convertFieldName2SetterGetterName(String fieldName){
+		
 		fieldName = fieldName.toLowerCase();
 		return fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
 	}
 
-	public Result<String> codeGenerate(String templateName, Map<String, Object> root,GenerateConfig config){
+	public Result<String> codeGenerate(Map<String, Object> root,GenerateConfig config, String relativePath){
 		Configuration cfg = new Configuration(); 
 	    Result<String> res = new Result<String>();
 	    try {
+	    	
 			cfg.setDirectoryForTemplateLoading(new File("src/main/resources/templates"));
-			Template template = cfg.getTemplate(templateName + ".ftl");  
-			
-			FileOutputStream fos = new FileOutputStream(config.getOutputPath() + convertOutputFileName(config) + convertOutputSuffix(config));
+			Template template = cfg.getTemplate(config.getOutputType() + ".ftl");  
+			StringBuffer outputPath = new StringBuffer();
+			outputPath.append(config.getOutputPath());
+			outputPath.append(convertOutputType2RelativePath(config) + "/");
+			CommonUtil.makeDirExist(outputPath.toString());
+			if(!ValidateUtil.isBlank(relativePath)){
+				outputPath.append(relativePath + "/");
+				CommonUtil.makeDirExist(outputPath.toString());
+			}
+			outputPath.append(convertOutputFileName(config));
+			outputPath.append(convertOutputSuffix(config));
+			FileOutputStream fos = new FileOutputStream(outputPath.toString());
 	        OutputStreamWriter osw = new OutputStreamWriter(fos, "UTF-8"); 
-	        
-	        //StringWriter out = new StringWriter();  
-	        //System.out.println(out.toString());  
-	        //数据与模板合并（数据+模板=输出）  
+	         
+	        //data merges to template (data + template = output)
 	        template.process(root, osw);  
 	        osw.flush(); 
 	        fos.close();
@@ -186,6 +278,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 			res.setStatus(CommonConstant.EXCEPTION_ST);
 			res.setErrorStack(ExceptionUtils.getFullStackTrace(e));
 		}
+
 	    res.setStatus(CommonConstant.SUCCESS_ST);
 	    return res;
 	    
@@ -196,15 +289,86 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 			suffix = ".java";
 		}else if(config.getOutputType().equals(CommonConstant.MAPPER_OUTPUT_TYPE)){
 			suffix = "Mapper.xml";
+		}else if(config.getOutputType().equals(CommonConstant.DAO_OUTPUT_TYPE)){
+			suffix = "Dao.java";
+		}else if(config.getOutputType().equals(CommonConstant.DAO_IMPL_OUTPUT_TYPE)){
+			suffix = "DaoImpl.java";
 		}
 		return suffix;
 	}
 	protected String convertOutputFileName(GenerateConfig config){
-		if(config.getOutputType().equals(CommonConstant.BEAN_OUTPUT_TYPE)){
+		if(config.getOutputType().equals(CommonConstant.BEAN_OUTPUT_TYPE)||
+				config.getOutputType().equals(CommonConstant.DAO_OUTPUT_TYPE)||
+				config.getOutputType().equals(CommonConstant.DAO_IMPL_OUTPUT_TYPE)){
 			return config.getEntityName();
 		}else if(config.getOutputType().equals(CommonConstant.MAPPER_OUTPUT_TYPE)){
 			return config.getEntityName().toLowerCase();
 		}
 		return config.getEntityName();
 	}
+	protected String convertOutputType2RelativePath(GenerateConfig config){
+		if(config.getOutputType().equals(CommonConstant.DAO_OUTPUT_TYPE)||
+				config.getOutputType().equals(CommonConstant.DAO_IMPL_OUTPUT_TYPE)){
+			return CommonConstant.DAO_OUTPUT_TYPE;
+		}else if(config.getOutputType().equals(CommonConstant.MAPPER_OUTPUT_TYPE)){
+			return "";
+		}else{
+			return config.getOutputType();
+		}
+	}
+	@Override
+	public Result<String> generatePackage(GenerateConfig config) {
+		// TODO Auto-generated method stub
+		Result<String> res = new Result<String>();
+		res.setStatus(CommonConstant.SUCCESS_ST);
+		
+		if(ValidateUtil.isBlank(config.getModuleName())){
+			res.setStatus(CommonConstant.FAIL_ST);
+			res.setErrorCode(ErrorCode.NO_MODULE_NAME);
+			res.setMsg(ErrorCode.NO_MODULE_NAME_MSG);
+			return res;
+		}
+		
+		if(!ValidateUtil.isBlank(config.getPjBase())){
+			// need to implement
+		}else{
+			if(ValidateUtil.isBlank(config.getOutputPath())){
+				res.setStatus(CommonConstant.FAIL_ST);
+				res.setErrorCode(ErrorCode.NO_OUTPUT_PATH);
+				res.setMsg(ErrorCode.NO_OUTPUT_PATH_MSG);
+			}
+			// java package: controller/service(impl)/dao(impl)/entity
+			StringBuffer javaPathPrefix = new StringBuffer();
+			javaPathPrefix.append(config.getOutputPath());
+			javaPathPrefix.append("java/");
+			javaPathPrefix.append(config.getModuleName());
+			javaPathPrefix.append("/");
+			CommonUtil.makeDirExist( javaPathPrefix.toString() + "controller");
+			CommonUtil.makeDirExist( javaPathPrefix.toString() + "service/impl");
+			CommonUtil.makeDirExist( javaPathPrefix.toString() + "dao/impl");
+			CommonUtil.makeDirExist( javaPathPrefix.toString() + "entity");
+			// jsp module dir only
+			StringBuffer rsPathPrefix = new StringBuffer();
+			rsPathPrefix.append(config.getOutputPath());
+			rsPathPrefix.append("/jsp/");
+			rsPathPrefix.append(config.getModuleName());
+			rsPathPrefix.append("/");
+			CommonUtil.makeDirExist(rsPathPrefix.toString());
+			rsPathPrefix = new StringBuffer();
+			rsPathPrefix.append(config.getOutputPath());
+			rsPathPrefix.append("/js/");
+			rsPathPrefix.append(config.getModuleName());
+			rsPathPrefix.append("/");
+			CommonUtil.makeDirExist(rsPathPrefix.toString());
+			rsPathPrefix = new StringBuffer();
+			rsPathPrefix.append(config.getOutputPath());
+			rsPathPrefix.append("/css/");
+			rsPathPrefix.append(config.getModuleName());
+			rsPathPrefix.append("/");
+			CommonUtil.makeDirExist(rsPathPrefix.toString());
+		}
+		
+		return res;
+	}
+
 }

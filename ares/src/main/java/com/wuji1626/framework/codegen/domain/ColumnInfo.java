@@ -11,6 +11,10 @@ public class ColumnInfo implements Serializable {
 	private String data_type;
 	private long data_length;
 	private String comments;
+	private boolean isInsert = true;
+	private boolean isShow = true;
+	private String order_flg = "";
+	private boolean isCondition = false;
 	public String getTable_name() {
 		return table_name;
 	}
@@ -40,6 +44,31 @@ public class ColumnInfo implements Serializable {
 	}
 	public void setComments(String comments) {
 		this.comments = comments;
+	}
+	public boolean isInsert() {
+		return isInsert;
+	}
+	public void setInsert(boolean isInsert) {
+		this.isInsert = isInsert;
+	}
+	public boolean isShow() {
+		return isShow;
+	}
+	public void setShow(boolean isShow) {
+		this.isShow = isShow;
+	}
+	
+	public String getOrder_flg() {
+		return order_flg;
+	}
+	public void setOrder_flg(String order_flg) {
+		this.order_flg = order_flg;
+	}
+	public boolean isCondition() {
+		return isCondition;
+	}
+	public void setCondition(boolean isCondition) {
+		this.isCondition = isCondition;
 	}
 	
 }

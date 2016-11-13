@@ -6,7 +6,10 @@ public class FieldInfo implements Serializable{
 
 	private static final long serialVersionUID = -2344885883947860575L;
 	
+	// java entity's field name
 	private String field_name;
+	// DB column's field name 
+	private String column_name;
 	private String setter_getter_name;
 	private String data_type;
 	private String comments;
@@ -33,6 +36,12 @@ public class FieldInfo implements Serializable{
 	}
 	public void setComments(String comments) {
 		this.comments = comments;
+	}
+	public String getColumn_name() {
+		return column_name;
+	}
+	public void setColumn_name(String column_name) {
+		this.column_name = column_name;
 	}
 	
 }

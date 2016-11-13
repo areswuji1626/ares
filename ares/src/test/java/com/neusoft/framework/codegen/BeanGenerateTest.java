@@ -1,8 +1,5 @@
 package com.neusoft.framework.codegen;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +12,7 @@ import com.wuji1626.framework.codegen.domain.GenerateConfig;
 import com.wuji1626.framework.codegen.domain.TableInfo;
 import com.wuji1626.framework.codegen.service.CodeGenerateService;
 import com.wuji1626.framework.codegen.service.DBMetaDataService;
+import com.wuji1626.framework.codegen.service.GenerateConfigService;
 import com.wuji1626.framework.constant.CommonConstant;
 import com.wuji1626.framework.result.Result;
 
@@ -22,7 +20,7 @@ import junit.framework.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration({"classpath*:**/applicationContext.xml","classpath*:**/dispatcher-servlet.xml"})
-public class CodeGenerateTest {
+public class BeanGenerateTest {
 
 	@Autowired
 	CodeGenerateService service;
@@ -30,7 +28,10 @@ public class CodeGenerateTest {
 	@Autowired
 	DBMetaDataService metaService;
 	
-	@Test
+	@Autowired
+	GenerateConfigService configService;
+	
+//	@Test
 	public void beanGenerateTest(){
 		
 		DataSourceInfo ds = new DataSourceInfo();
@@ -59,51 +60,39 @@ public class CodeGenerateTest {
 		config.setColumnList(res.getResultSet());
 		config.setDs(ds);
 		config.setTab(tab);
-		// 排序字段
-//		List<ColumnInfo> orderColumn = new ArrayList<ColumnInfo>();
-//		ColumnInfo order = new ColumnInfo();
-//		order.setColumn_name("columnorder");
-//		orderColumn.add(order);
-//		config.setOrderColumnList(orderColumn);
-		// 条件字段
-		List<ColumnInfo> conditionColumn = new ArrayList<ColumnInfo>();
-		ColumnInfo condition = new ColumnInfo();
-		condition.setColumn_name("obj_tab_code");
-		conditionColumn.add(condition);
-		ColumnInfo condition2 = new ColumnInfo();
-		condition2.setColumn_name("obj_guid");
-		conditionColumn.add(condition2);
-		config.setConditionColumnList(conditionColumn);
-		// 输出路径
+		// output path
 		config.setOutputPath("D:/generateCode/");
-//		config.setOutputType("bean");
 		
 		Result<String> genBean = service.generateBean(config);
 		Result<String> genRes = service.generateMyBatisMapper(config);
 		Assert.assertEquals(CommonConstant.SUCCESS_ST, genBean.getStatus());
 		Assert.assertEquals(CommonConstant.SUCCESS_ST, genRes.getStatus());
 	}
-//	@Test
+	@Test
 	public void MySQLBeanGenerateTest(){
 		
 		DataSourceInfo ds = new DataSourceInfo();
-		ds.setDs_name("CD管理数据库");
+		ds.setDs_name("QTI Database");
 		ds.setDs_type("MySQL");
-		ds.setDs_url("jdbc:mysql://127.0.0.1:3306/cdholder?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull");
+		ds.setDs_url("jdbc:mysql://127.0.0.1:3306/qti?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull");
 		ds.setDs_user("root");
 		ds.setDs_password("password");
 		
 		TableInfo tab = new TableInfo();
-		tab.setDs_name("CD管理数据库");
-		tab.setTable_name("deptinfo");
+		tab.setDs_name("QTI Database");
+		tab.setTable_name("question");
 		
 		Result<ColumnInfo> res = metaService.listColumn(ds, tab);
 		
 		GenerateConfig config = new GenerateConfig();
-		config.setPackageName("com.neusoft.search.domain");
-		config.setEntityName("Deptinfo");
+		config.setPackageName("com.wuji1626.ares.qti");
+		config.setEntityName("Question");
 		config.setColumnList(res.getResultSet());
 		config.setDs(ds);
-		service.generateBean(config);
+		config.setOutputPath("D:/generateCode/");
+		
+		Result<String> genBean = service.generateBean(config);
+		Assert.assertEquals(CommonConstant.SUCCESS_ST, genBean.getStatus());
+		
 	}
 }

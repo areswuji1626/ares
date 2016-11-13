@@ -7,6 +7,8 @@ public class GenerateConfig implements Serializable {
 
 	private static final long serialVersionUID = -1736041912853291600L;
 	
+	private String pjBase;
+	private String moduleName;
 	private String packageName;
 	private String entityName;
 	private List<String> importPackageList;
@@ -15,17 +17,8 @@ public class GenerateConfig implements Serializable {
 	private TableInfo tab;
 	private String outputPath;
 	private String outputType;
-	// 排序字段
-	private List<ColumnInfo> orderColumnList;
-	// 查询条件字段
-	private List<ColumnInfo> conditionColumnList;
-	public List<ColumnInfo> getOrderColumnList() {
-		return orderColumnList;
-	}
-	public void setOrderColumnList(List<ColumnInfo> orderColumnList) {
-		this.orderColumnList = orderColumnList;
-	}
-	// 操作列表
+
+	// operation list
 	private List<String> operationList;
 	
 	public String getPackageName() {
@@ -76,17 +69,23 @@ public class GenerateConfig implements Serializable {
 	public void setTab(TableInfo tab) {
 		this.tab = tab;
 	}
-	public List<ColumnInfo> getConditionColumnList() {
-		return conditionColumnList;
-	}
-	public void setConditionColumnList(List<ColumnInfo> conditionColumnList) {
-		this.conditionColumnList = conditionColumnList;
-	}
 	public String getOutputType() {
 		return outputType;
 	}
 	public void setOutputType(String outputType) {
 		this.outputType = outputType;
+	}
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+	public String getPjBase() {
+		return pjBase;
+	}
+	public void setPjBase(String pjBase) {
+		this.pjBase = pjBase;
 	}
 	
 }

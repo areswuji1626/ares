@@ -110,4 +110,15 @@ public class MetaDataTest {
 		Assert.assertEquals(5, columns.getResultSet().size());
 		
 	}
+	@Test
+	public void insertDs(){
+		DataSourceInfo ds = new DataSourceInfo();
+		ds.setDs_name("QTI Database");
+		ds.setDs_type("MySQL");
+		ds.setDs_url("jdbc:mysql://127.0.0.1:3306/qti?useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull");
+		ds.setDs_user("root");
+		ds.setDs_password("password");
+		Result<String> res = service.insertDataSource(ds);
+		Assert.assertEquals(CommonConstant.SUCCESS_ST, res.getStatus());
+	}
 }
