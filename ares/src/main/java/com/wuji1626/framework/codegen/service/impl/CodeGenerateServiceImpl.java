@@ -76,10 +76,18 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 	    
 	    Map<String, Object> root = new HashMap<String, Object>();  
         Result<FieldInfo> fieldRes = convertDBColumn2Code(config.getDs(),config.getColumnList());
+        Result<ColumnInfo> primaryKeyRes = metaService.getPrimaryColumn(config.getDs(), config.getTab());
         root.put("package", config.getPackageName());  
         root.put("entityName", config.getEntityName());  
-        root.put("fieldsStr", convertFieldsStr(fieldRes.getResultSet()));
+        root.put("selectFieldsStr", convertSelectFieldsStr(fieldRes.getResultSet()));
+        root.put("pkCondition", convertPK2Condition(primaryKeyRes,fieldRes));
         root.put("orderStr", convertOrderStr(configService.getOrderFieldList(config)));
+        // if the pk is single, auto-generated pk will be return in mapper;
+        // if the pk is compound, pk will not be auto-generated
+        root.put("primaryKey", primaryKeyRes.getResultSet().size()==1?primaryKeyRes.getResultSet().get(0).getColumn_name():"");
+        Result<FieldInfo> pkGetter = convertDBColumn2Code(config.getDs(),primaryKeyRes.getResultSet());
+        root.put("pkGetter", pkGetter.getResultSet().size()==1?pkGetter.getResultSet().get(0).getField_name():"");
+        root.put("insertStr", convertInsertStr(config, fieldRes.getResultSet(), primaryKeyRes.getResultSet()));
         // to keep style, table's name is lowcase
         root.put("tab", config.getTab());
         //获取输出流（指定到控制台（标准输出））  
@@ -105,13 +113,13 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 
         //create data model（Map）  
         Map<String, Object> root = new HashMap<String, Object>();  
-//        Result<FieldInfo> fieldRes = convertDBColumn2Code(config.getDs(),config.getColumnList());
-//        Result<String> importRes = metaService.getImportList(fieldRes.getResultSet(),config);
+        Result<ColumnInfo> resPrimaryKey = metaService.getPrimaryColumn(config.getDs(), config.getTab());
         // entity's package specify
         root.put("package", config.getPackageName());  
         root.put("entityName", config.getEntityName());  
-//        root.put("fieldList", fieldRes.getResultSet());
-//        root.put("importPackageList", importRes.getResultSet());
+        root.put("primaryKey", resPrimaryKey.getResultSet().size()==1?resPrimaryKey.getResultSet().get(0).getColumn_name():"");
+        Result<FieldInfo> pkGetter = convertDBColumn2Code(config.getDs(),resPrimaryKey.getResultSet());
+        root.put("pkGetter", pkGetter.getResultSet().size()==1?pkGetter.getResultSet().get(0).getField_name():"");
 	        //get output stream with std io  
         if(ValidateUtil.isBlank(config.getOutputPath())){
 			res.setStatus(CommonConstant.FAIL_ST);
@@ -141,8 +149,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
          
 	}
 	
-	
-	protected String convertFieldsStr(List<FieldInfo> cols){
+	protected String convertSelectFieldsStr(List<FieldInfo> cols){
 		StringBuffer buf = new StringBuffer();
 		for(FieldInfo col:cols){
 			buf.append(col.getColumn_name()+" ");
@@ -197,7 +204,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 			}else{
 				field.setData_type(convertMySQLDataType(column.getData_type()));
 			}
-			field.setSetter_getter_name(convertFieldName2SetterGetterName(field.getField_name()));
+//			field.setSetter_getter_name(convertFieldName2SetterGetterName(field.getField_name()));
 			field.setComments(column.getComments());
 			fieldList.add(field);
 		}
@@ -370,5 +377,97 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 		
 		return res;
 	}
-
+	protected String convertInsertStr(GenerateConfig config, List<FieldInfo> fields, List<ColumnInfo> pkColumn){
+		StringBuffer insertStatement = new StringBuffer();
+		insertStatement.append(CommonConstant.BRANKET_L);
+		for(FieldInfo field:fields){
+			insertStatement.append(field.getColumn_name());
+			insertStatement.append(CommonConstant.COMMA);
+		}
+		insertStatement = new StringBuffer(insertStatement.subSequence(0, insertStatement.length()-1));
+		insertStatement.append(CommonConstant.BRANKET_R);
+		insertStatement.append(CommonConstant.BLANK);
+		
+		insertStatement.append("values");
+		insertStatement.append(CommonConstant.BLANK);
+		insertStatement.append(CommonConstant.BRANKET_L);
+		for(FieldInfo field:fields){
+			// if the table has a single pk, generater can generate a auto-generate uuid
+			if(pkColumn.size()==1){
+				// the pk field will append uuid function
+				if(pkColumn.get(0).getColumn_name().equals(field.getColumn_name())){
+					insertStatement.append(getUUIDStatement(config));
+					insertStatement.append(CommonConstant.COMMA);
+				}else if(isDateTimeField(field)){
+					insertStatement.append(getSysdateStatement(config));
+					insertStatement.append(CommonConstant.COMMA);
+				}else{
+					insertStatement.append(CommonConstant.WELL);
+					insertStatement.append(CommonConstant.BRACE_L);
+					insertStatement.append(field.getField_name());
+					insertStatement.append(CommonConstant.BRACE_R);
+					insertStatement.append(CommonConstant.COMMA);
+				}
+				
+			}else{
+				insertStatement.append(CommonConstant.WELL);
+				insertStatement.append(CommonConstant.BRACE_L);
+				insertStatement.append(field.getField_name());
+				insertStatement.append(CommonConstant.BRACE_R);
+				insertStatement.append(CommonConstant.COMMA);
+			}
+		}
+		insertStatement = new StringBuffer(insertStatement.subSequence(0, insertStatement.length()-1));
+		insertStatement.append(CommonConstant.BRANKET_R);
+		
+		return insertStatement.toString();
+	}
+	protected String getUUIDStatement(GenerateConfig config){
+		switch(config.getDs().getDs_type()){
+			case CommonConstant.MYSQL_DS:
+				return "uuid()";
+			case CommonConstant.ORACLE_DS:
+				return "sys_guid()";
+			default:
+				return "uuid()";
+		}
+	}
+	protected boolean isDateTimeField(FieldInfo field){
+		if(field.getData_type().equals("Date")){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	protected String getSysdateStatement(GenerateConfig config){
+		switch(config.getDs().getDs_type()){
+			case CommonConstant.MYSQL_DS:
+				return "sysdate()";
+			case CommonConstant.ORACLE_DS:
+				return "sysdate";
+			default:
+				return "sysdate()";
+		}
+	}
+	protected String convertPK2Condition(Result<ColumnInfo> primaryKeys,Result<FieldInfo> fieldRes){
+		StringBuffer buf = new StringBuffer();
+		for(ColumnInfo primaryKey:primaryKeys.getResultSet()){
+			for(FieldInfo field:fieldRes.getResultSet()){
+				if(primaryKey.getColumn_name().equals(field.getColumn_name())){
+					buf.append(primaryKey.getColumn_name());
+					buf.append(CommonConstant.BLANK);
+					buf.append(CommonConstant.EQUAL);
+					buf.append(CommonConstant.BLANK);
+					buf.append(CommonConstant.WELL);
+					buf.append(CommonConstant.BRACE_L);
+					buf.append(field.getField_name());
+					buf.append(CommonConstant.BRACE_R);
+					buf.append(CommonConstant.BLANK);
+					buf.append("and");
+					buf.append(CommonConstant.BLANK);
+				}
+			}
+		}
+		return buf.substring(0, buf.length()-4);
+	}
 }

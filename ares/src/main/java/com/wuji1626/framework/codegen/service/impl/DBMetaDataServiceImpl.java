@@ -37,6 +37,7 @@ public class DBMetaDataServiceImpl implements DBMetaDataService {
 	private static String ORACLE_GET_TABLES_SQL = "select a.table_name,b.comments from user_tables a, user_tab_comments b where a.table_name=b.table_name order by a.table_name";
 	private static String ORACLE_GET_COLUMNS_SQL = "select a.table_name,b.column_name,b.data_type,b.data_length,a.comments from user_col_comments a, user_tab_columns b where a.table_name=b.table_name and a.column_name=b.column_name and a.table_name=?";
 	private static String MYSQL_GET_COLUMNS_SQL = "select table_name,column_name,data_type,character_maximum_length,column_comment from information_schema.columns where table_name=?";
+	private static String MYSQL_GET_PRI_COL_SQL = "select table_name,column_name,data_type,character_maximum_length,column_comment from information_schema.columns where table_name=? and column_key='PRI'";
 	@Override
 	public Result<String> insertDataSource(DataSourceInfo ds) {
 		// TODO Auto-generated method stub
@@ -200,7 +201,22 @@ public class DBMetaDataServiceImpl implements DBMetaDataService {
 				return res;
 		}
 	}
-	
+	@Override
+	public Result<ColumnInfo> getPrimaryColumn(DataSourceInfo ds, TableInfo tab) {
+		// TODO Auto-generated method stub
+		switch(ds.getDs_type()){
+		case CommonConstant.MYSQL_DS:
+			return getMySQLPrimaryColumnsByTable(ds, tab);
+		case CommonConstant.ORACLE_DS:
+			return getOraclePrimaryColumnsByTable(ds, tab);
+		default:
+			Result<ColumnInfo> res = new Result<ColumnInfo>();
+			res.setStatus(CommonConstant.FAIL_ST);
+			res.setErrorCode(ErrorCode.NO_MATCH_DS);
+			res.setMsg(ErrorCode.NO_MATCH_DS_MSG);
+			return res;
+	}
+	}
 	public Result<TableInfo> getMySQLTablesByDs(DataSourceInfo ds){
 		Result<TableInfo> res = new Result<TableInfo>();
 		List<TableInfo> list = new ArrayList<TableInfo>();
@@ -390,6 +406,53 @@ public class DBMetaDataServiceImpl implements DBMetaDataService {
 		
 		return res;
 	}
+	public Result<ColumnInfo> getMySQLPrimaryColumnsByTable(DataSourceInfo ds,TableInfo tab){
+		Result<ColumnInfo> res = new Result<ColumnInfo>();
+		List<ColumnInfo> list = new ArrayList<ColumnInfo>();
+
+		try {
+			Class.forName(CommonConstant.MYSQL_CLASS_NAME);
+			//指定连接类型  
+			Connection conn = DriverManager.getConnection(ds.getDs_url(), 
+					ds.getDs_user(), ds.getDs_password());//获取连接  
+			PreparedStatement pst = conn.prepareStatement(MYSQL_GET_PRI_COL_SQL);//准备执行语句
+			pst.setString(1, tab.getTable_name());
+			ResultSet rs = pst.executeQuery();
+			rs.beforeFirst();
+			while(rs.next()){
+				ColumnInfo columnInfo = new ColumnInfo();
+				columnInfo.setTable_name(rs.getString(1));
+				columnInfo.setColumn_name(rs.getString(2));
+				columnInfo.setData_type(rs.getString(3));
+				columnInfo.setData_length(rs.getLong(4));
+				columnInfo.setComments(rs.getString(5));
+				list.add(columnInfo);
+			}
+			res.setResultSet(list);
+			pst.close();
+			conn.close();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			res.setStatus(CommonConstant.EXCEPTION_ST);
+			res.setErrorCode(ErrorCode.CLASS_NO_FOUND_E);
+			res.setMsg(ErrorCode.CLASS_NO_FOUND_E_MSG);
+			res.setErrorStack(ExceptionUtils.getFullStackTrace(e));
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			res.setStatus(CommonConstant.EXCEPTION_ST);
+			res.setErrorCode(ErrorCode.SQL_EXCEPTION);
+			res.setMsg(ErrorCode.SQL_EXCEPTION_MSG);
+			res.setErrorStack(ExceptionUtils.getFullStackTrace(e));
+		}
+		
+		return res;
+	}
+	public Result<ColumnInfo> getOraclePrimaryColumnsByTable(DataSourceInfo ds,TableInfo tab){
+		Result<ColumnInfo> res = new Result<ColumnInfo>();
+		return res;
+	}
 	protected String getSchemaFromUrl(DataSourceInfo ds){
 		String subUrl = ds.getDs_url().substring(0, ds.getDs_url().indexOf("?"));
 		return subUrl.substring(subUrl.lastIndexOf("/")+1);
@@ -424,4 +487,5 @@ public class DBMetaDataServiceImpl implements DBMetaDataService {
 		res.setStatus(CommonConstant.SUCCESS_ST);
 		return res;
 	}
+
 }

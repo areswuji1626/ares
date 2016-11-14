@@ -16,14 +16,14 @@
            http://www.springframework.org/schema/context/spring-context-3.0.xsd
     	   ">
            	
-	<!-- 采用注释的方式配置bean -->  
+	<!-- use annotation to config beans -->  
     <context:annotation-config />  
-    <!-- 配置要扫描的包 -->  
+    <!-- scan packages -->  
     <context:component-scan base-package="com.wuji1626" />
-	<!-- 加载 jdbc.properties 配置文件 -->
+	<!-- load jdbc.properties config file -->
 	<context:property-placeholder location="classpath:jdbc.properties"/>
 
-	<!-- 配置数据源 1 配置 -->
+	<!-- Datasource 1 config -->
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">  
     	<property name="driverClass" value="${jdbc.driver}" />  
     	<property name="jdbcUrl" value="${jdbc.url}" />  
@@ -44,12 +44,32 @@
 		<property name="preferredTestQuery" value="${jdbc.preferredTestQuery}" /> -->
 	</bean>
 
-	<!-- 配置数据源 2 配置 -->
+	<!-- Datasource 2 config -->
 	<bean id="dataSource2" class="com.mchange.v2.c3p0.ComboPooledDataSource">  
     	<property name="driverClass" value="${jdbc.driver2}" />  
     	<property name="jdbcUrl" value="${jdbc.url2}" />  
     	<property name="user" value="${jdbc.username2}" />  
     	<property name="password" value="${jdbc.password2}" />  
+    	<property name="autoCommitOnClose" value="true" />  
+    	<property name="checkoutTimeout" value="${jdbc.checkoutTimeout}" />  
+    	<property name="initialPoolSize" value="${jdbc.minPoolSize}" />  
+    	<property name="minPoolSize" value="${jdbc.minPoolSize}" />  
+    	<property name="maxPoolSize" value="${jdbc.maxPoolSize}" />  
+    	<property name="maxIdleTime" value="${jdbc.maxIdleTime}" />  
+    	<property name="acquireIncrement" value="${jdbc.acquireIncrement}" />  
+    	<!-- JDBC的标准,用以控制数据源内加载的PreparedStatements数量。  
+		        但由于预缓存的statements属于单个connection而不是整个连接池所以设置这个参数需要考虑到多方面的因数.如果maxStatements与maxStatementsPerConnection均为0,则缓存被关闭。Default:0-->  
+		<property name="maxStatements" value="${jdbc.maxStatements}"/>  
+		<!-- 每60秒检查所有连接池中的空闲连接.Default:0  
+		<property name="idleConnectionTestPeriod" value="${jdbc.idleConnectionTestPeriod}"/> 
+		<property name="preferredTestQuery" value="${jdbc.preferredTestQuery}" />  --> 
+	</bean>
+	<!-- Datasource3 config -->
+	<bean id="dataSource3" class="com.mchange.v2.c3p0.ComboPooledDataSource">  
+    	<property name="driverClass" value="${jdbc.driver3}" />  
+    	<property name="jdbcUrl" value="${jdbc.url3}" />  
+    	<property name="user" value="${jdbc.username3}" />  
+    	<property name="password" value="${jdbc.password3}" />  
     	<property name="autoCommitOnClose" value="true" />  
     	<property name="checkoutTimeout" value="${jdbc.checkoutTimeout}" />  
     	<property name="initialPoolSize" value="${jdbc.minPoolSize}" />  
@@ -71,6 +91,7 @@
 			<map key-type="java.lang.String">
 				<entry value-ref="dataSource" key="dataSource"></entry>
 				<entry value-ref="dataSource2" key="dataSource2"></entry>
+				<entry value-ref="dataSource3" key="dataSource3"></entry>
 			</map>
 		</property>
 		<property name="defaultTargetDataSource" ref="dataSource" />

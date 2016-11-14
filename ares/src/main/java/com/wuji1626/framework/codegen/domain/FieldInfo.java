@@ -10,7 +10,7 @@ public class FieldInfo implements Serializable{
 	private String field_name;
 	// DB column's field name 
 	private String column_name;
-	private String setter_getter_name;
+//	private String setter_getter_name;
 	private String data_type;
 	private String comments;
 	public String getField_name() {
@@ -19,12 +19,12 @@ public class FieldInfo implements Serializable{
 	public void setField_name(String field_name) {
 		this.field_name = field_name;
 	}
-	public String getSetter_getter_name() {
-		return setter_getter_name;
-	}
-	public void setSetter_getter_name(String setter_getter_name) {
-		this.setter_getter_name = setter_getter_name;
-	}
+//	public String getSetter_getter_name() {
+//		return setter_getter_name;
+//	}
+//	public void setSetter_getter_name(String setter_getter_name) {
+//		this.setter_getter_name = setter_getter_name;
+//	}
 	public String getData_type() {
 		return data_type;
 	}

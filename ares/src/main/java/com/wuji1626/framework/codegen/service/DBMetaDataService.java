@@ -22,4 +22,6 @@ public interface DBMetaDataService {
 	
 	public Result<ColumnInfo> listColumn(DataSourceInfo ds, TableInfo tab);
 	public Result<String> getImportList(List<FieldInfo> fields, GenerateConfig config);
+	public Result<ColumnInfo> getPrimaryColumn(DataSourceInfo ds, TableInfo tab);
+	
 }

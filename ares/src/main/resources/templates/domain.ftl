@@ -16,10 +16,10 @@ public class ${entityName} implements Serializable {
 	</#list>
 	
 	<#list fieldList as field>
-	public ${field.data_type} get${field.setter_getter_name?cap_first}(){
+	public ${field.data_type} get${field.field_name?cap_first}(){
 		return ${field.field_name};
 	}
-	public void set${field.setter_getter_name?cap_first}(${field.data_type} ${field.field_name}){
+	public void set${field.field_name?cap_first}(${field.data_type} ${field.field_name}){
 		this.${field.field_name} = ${field.field_name};
 	}
 	</#list>

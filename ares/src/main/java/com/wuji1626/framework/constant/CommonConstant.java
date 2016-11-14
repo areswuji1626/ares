@@ -10,6 +10,14 @@ public class CommonConstant {
 	public static final String NEW_LINE = "\n";
 	public static final String FILESYS_SEPERATOR = "//";
 	public static final String CONNECTOR = "%||%";
+	public static final String COMMA = ",";
+	public static final String EQUAL = "=";
+	public static final String BRANKET_L = "(";
+	public static final String BRANKET_R = ")";
+	public static final String BLANK = " ";
+	public static final String WELL = "#";
+	public static final String BRACE_L = "{";
+	public static final String BRACE_R = "}";
 	
 	public static final String OS = "os";
 	
