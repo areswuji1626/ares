@@ -1,4 +1,4 @@
-package com.neusoft.framework.codegen;
+package com.wuji1626.framework.codegen;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
