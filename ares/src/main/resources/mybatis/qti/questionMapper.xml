@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuji1626.ares.qti。domain.Question">
+
+<select id="getAllQuestion" resultType="com.wuji1626.ares.qti.domain.Question">
+	select question_id questionId,question_text questionText,create_date createDate,modify_date modifyDate,create_peson_id createPesonId,modify_person_id modifyPersonId,del_flg delFlg
+	from question
+	where del_flg != '01'
+	order by create_date desc
+</select>
+<select id="getQuestionById" parameterType="com.wuji1626.ares.qti.domain.Question" resultType="com.wuji1626.ares.qti.domain.Question">
+	select question_id questionId,question_text questionText,create_date createDate,modify_date modifyDate,create_peson_id createPesonId,modify_person_id modifyPersonId,del_flg delFlg
+	from question
+	where del_flg != '01'
+	and ( question_id = #{questionId}  )
+	order by create_date desc
+</select>
+	
+<insert id="insertQuestion" parameterType="com.wuji1626.ares.qti.domain.Question">
+    <selectKey order="AFTER" keyProperty="questionId" resultType="java.lang.String">
+		SELECT question_id from question order by modify_date limit 1;
+	</selectKey>
+    insert into question (question_id,question_text,create_date,modify_date,create_peson_id,modify_person_id,del_flg) values (uuid(),#{questionText},sysdate(),sysdate(),#{createPesonId},#{modifyPersonId},#{delFlg})
+</insert>
+</mapper>
