@@ -1,0 +1,41 @@
+package com.wuji1626.ares.qti.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.wuji1626.framework.db.DatabaseContextHolder;
+import com.wuji1626.framework.db.DynamicDataSourceAble;
+import com.wuji1626.framework.db.DynamicDataSourceAble;
+
+import com.wuji1626.ares.qti.domain.Question;
+import com.wuji1626.ares.qti.service.QuestionService;
+import com.wuji1626.ares.qti.dao.QuestionDao;
+
+@Service("questionService")
+@Transactional
+public class QuestionServiceImpl implements QuestionService,DynamicDataSourceAble{
+
+	static{
+		DatabaseContextHolder.setDBType(DATA_SOURCE_1);
+	}
+
+	@Autowired
+	private QuestionDao questionDao;
+	
+	@Override
+	public List<Question> getAllQuestion(){
+		return questionDao.getAllQuestion();
+	}
+	@Override
+	public Question getQuestionById(Question question){
+		return questionDao.getQuestionById(question);
+	}
+
+	@Override
+	public String insertQuestion(Question question){
+		return questionDao.insertQuestion(question);
+	}
+}

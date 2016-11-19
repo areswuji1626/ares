@@ -8,6 +8,7 @@ public interface CodeGenerateService {
 	public Result<String> generateBean(GenerateConfig config);
 	public Result<String> generateMyBatisMapper(GenerateConfig config);
 	public Result<String> generateDao(GenerateConfig config);
+	public Result<String> generateService(GenerateConfig config);
 	
 	public Result<String> generatePackage(GenerateConfig config);
 }

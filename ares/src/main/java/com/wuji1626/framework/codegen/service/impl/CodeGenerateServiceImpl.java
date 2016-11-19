@@ -149,6 +149,49 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
          
 	}
 	
+	@Override
+	public Result<String> generateService(GenerateConfig config) {
+		// TODO Auto-generated method stub
+	    Result<String> res = new Result<String>();
+	    config.setOutputType(CommonConstant.SERVICE_OUTPUT_TYEP);
+
+        //create data model（Map）  
+        Map<String, Object> root = new HashMap<String, Object>();  
+        Result<ColumnInfo> resPrimaryKey = metaService.getPrimaryColumn(config.getDs(), config.getTab());
+        // entity's package specify
+        root.put("package", config.getPackageName());  
+        root.put("entityName", config.getEntityName());  
+        root.put("primaryKey", resPrimaryKey.getResultSet().size()==1?resPrimaryKey.getResultSet().get(0).getColumn_name():"");
+        Result<FieldInfo> pkGetter = convertDBColumn2Code(config.getDs(),resPrimaryKey.getResultSet());
+        root.put("pkGetter", pkGetter.getResultSet().size()==1?pkGetter.getResultSet().get(0).getField_name():"");
+	        //get output stream with std io  
+        if(ValidateUtil.isBlank(config.getOutputPath())){
+			res.setStatus(CommonConstant.FAIL_ST);
+			res.setErrorCode(ErrorCode.NO_OUTPUT_PATH);
+			res.setMsg(ErrorCode.NO_OUTPUT_PATH_MSG);
+			return res;
+        }
+	    Result<String> serviceRes = codeGenerate(root, config, null);
+	    config.setOutputType(CommonConstant.SERVICE_IMPL_OUTPUT_TYPE);
+	    Result<String> serviceImplRes = codeGenerate(root, config, CommonConstant.IMPL_PATH);
+	    
+	    if(serviceRes.getStatus().equals(CommonConstant.SUCCESS_ST)||
+	    		serviceImplRes.getStatus().equals(CommonConstant.SUCCESS_ST)){
+	    	res.setStatus(CommonConstant.SUCCESS_ST);
+	    }else{
+	    	if(serviceRes.getStatus().equals(CommonConstant.FAIL_ST)){
+	    		res.appendErrorCode(serviceRes.getErrorCode());
+	    		res.appendErrorMsg(serviceRes.getMsg());
+	    	}
+	    	if(serviceImplRes.getStatus().equals(CommonConstant.FAIL_ST)){
+	    		res.appendErrorCode(serviceImplRes.getErrorCode());
+	    		res.appendErrorMsg(serviceImplRes.getMsg());
+	    	}
+	    	res.setStatus(CommonConstant.FAIL_ST);
+	    }
+		return res;  
+	}
+	
 	protected String convertSelectFieldsStr(List<FieldInfo> cols){
 		StringBuffer buf = new StringBuffer();
 		for(FieldInfo col:cols){
@@ -300,13 +343,19 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 			suffix = "Dao.java";
 		}else if(config.getOutputType().equals(CommonConstant.DAO_IMPL_OUTPUT_TYPE)){
 			suffix = "DaoImpl.java";
+		}else if(config.getOutputType().equals(CommonConstant.SERVICE_OUTPUT_TYEP)){
+			suffix = "Service.java";
+		}else if(config.getOutputType().equals(CommonConstant.SERVICE_IMPL_OUTPUT_TYPE)){
+			suffix = "ServiceImpl.java";
 		}
 		return suffix;
 	}
 	protected String convertOutputFileName(GenerateConfig config){
 		if(config.getOutputType().equals(CommonConstant.BEAN_OUTPUT_TYPE)||
 				config.getOutputType().equals(CommonConstant.DAO_OUTPUT_TYPE)||
-				config.getOutputType().equals(CommonConstant.DAO_IMPL_OUTPUT_TYPE)){
+				config.getOutputType().equals(CommonConstant.DAO_IMPL_OUTPUT_TYPE)||
+				config.getOutputType().equals(CommonConstant.SERVICE_OUTPUT_TYEP)||
+				config.getOutputType().equals(CommonConstant.SERVICE_IMPL_OUTPUT_TYPE)){
 			return config.getEntityName();
 		}else if(config.getOutputType().equals(CommonConstant.MAPPER_OUTPUT_TYPE)){
 			return config.getEntityName().toLowerCase();
@@ -319,6 +368,9 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 			return CommonConstant.DAO_OUTPUT_TYPE;
 		}else if(config.getOutputType().equals(CommonConstant.MAPPER_OUTPUT_TYPE)){
 			return "";
+		}else if(config.getOutputType().equals(CommonConstant.SERVICE_OUTPUT_TYEP)||
+				config.getOutputType().equals(CommonConstant.SERVICE_IMPL_OUTPUT_TYPE)){
+			return CommonConstant.SERVICE_OUTPUT_TYEP;
 		}else{
 			return config.getOutputType();
 		}
@@ -470,4 +522,5 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 		}
 		return buf.substring(0, buf.length()-4);
 	}
+
 }

@@ -45,6 +45,9 @@ public class CommonConstant {
 	public static final String MAPPER_OUTPUT_TYPE = "mapper";
 	public static final String DAO_OUTPUT_TYPE = "dao";
 	public static final String DAO_IMPL_OUTPUT_TYPE = "daoimpl";
+	public static final String SERVICE_OUTPUT_TYEP = "service";
+	public static final String SERVICE_IMPL_OUTPUT_TYPE = "serviceimpl";
+	public static final String CONTROLER_OUTPUT_TYPE = "controller";
 	
 	public static final String IMPL_PATH = "impl";
 	
