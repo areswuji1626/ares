@@ -192,6 +192,34 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 		return res;  
 	}
 	
+	@Override
+	public Result<String> generateController(GenerateConfig config) {
+		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub
+	    Result<String> res = new Result<String>();
+	    config.setOutputType(CommonConstant.CONTROLER_OUTPUT_TYPE);
+
+        //create data model（Map）  
+        Map<String, Object> root = new HashMap<String, Object>();  
+        Result<ColumnInfo> resPrimaryKey = metaService.getPrimaryColumn(config.getDs(), config.getTab());
+        // entity's package specify
+        root.put("package", config.getPackageName());  
+        root.put("entityName", config.getEntityName());  
+        root.put("primaryKey", resPrimaryKey.getResultSet().size()==1?resPrimaryKey.getResultSet().get(0).getColumn_name():"");
+        Result<FieldInfo> pkGetter = convertDBColumn2Code(config.getDs(),resPrimaryKey.getResultSet());
+        root.put("pkGetter", pkGetter.getResultSet().size()==1?pkGetter.getResultSet().get(0).getField_name():"");
+	        //get output stream with std io  
+        if(ValidateUtil.isBlank(config.getOutputPath())){
+			res.setStatus(CommonConstant.FAIL_ST);
+			res.setErrorCode(ErrorCode.NO_OUTPUT_PATH);
+			res.setMsg(ErrorCode.NO_OUTPUT_PATH_MSG);
+			return res;
+        }
+	    Result<String> controllerRes = codeGenerate(root, config, null);
+	    
+		return controllerRes;  
+	}
+	
 	protected String convertSelectFieldsStr(List<FieldInfo> cols){
 		StringBuffer buf = new StringBuffer();
 		for(FieldInfo col:cols){
@@ -347,6 +375,8 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 			suffix = "Service.java";
 		}else if(config.getOutputType().equals(CommonConstant.SERVICE_IMPL_OUTPUT_TYPE)){
 			suffix = "ServiceImpl.java";
+		}else if(config.getOutputType().equals(CommonConstant.CONTROLER_OUTPUT_TYPE)){
+			suffix = "Controller.java";
 		}
 		return suffix;
 	}
@@ -355,7 +385,8 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 				config.getOutputType().equals(CommonConstant.DAO_OUTPUT_TYPE)||
 				config.getOutputType().equals(CommonConstant.DAO_IMPL_OUTPUT_TYPE)||
 				config.getOutputType().equals(CommonConstant.SERVICE_OUTPUT_TYEP)||
-				config.getOutputType().equals(CommonConstant.SERVICE_IMPL_OUTPUT_TYPE)){
+				config.getOutputType().equals(CommonConstant.SERVICE_IMPL_OUTPUT_TYPE)||
+				config.getOutputType().equals(CommonConstant.CONTROLER_OUTPUT_TYPE)){
 			return config.getEntityName();
 		}else if(config.getOutputType().equals(CommonConstant.MAPPER_OUTPUT_TYPE)){
 			return config.getEntityName().toLowerCase();
@@ -371,6 +402,8 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 		}else if(config.getOutputType().equals(CommonConstant.SERVICE_OUTPUT_TYEP)||
 				config.getOutputType().equals(CommonConstant.SERVICE_IMPL_OUTPUT_TYPE)){
 			return CommonConstant.SERVICE_OUTPUT_TYEP;
+		}else if(config.getOutputType().equals(CommonConstant.CONTROLER_OUTPUT_TYPE)){
+			return CommonConstant.CONTROLER_OUTPUT_TYPE;
 		}else{
 			return config.getOutputType();
 		}
