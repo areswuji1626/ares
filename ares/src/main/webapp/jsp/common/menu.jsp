@@ -10,7 +10,7 @@
               <img src="<%=request.getContextPath()%>/images/AdminLTE/user2-160x160.jpg" class="img-circle" alt="User Image">
             </div>
             <div class="pull-left info">
-              <p>Alexander Pierce</p>
+              <p>Wenhe Zhang</p>
               <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>
           </div>
@@ -33,6 +33,20 @@
               </a>
               <ul class="treeview-menu">
                 <li><a href="<%=request.getContextPath()%>/picoperation/uploadPicView"><i class="fa fa-circle-o"></i>上传图片</a></li>
+              </ul>
+            </li>
+          </ul>
+          <ul class="sidebar-menu">
+            <li class="header">QTI</li>
+            <li class="treeview">
+              <a href="#">
+                <i class="fa fa-dashboard"></i> <span>Question</span> <i class="fa fa-angle-left pull-right"></i>
+              </a>
+              <ul class="treeview-menu">
+                <li><a href="<%=request.getContextPath()%>/question/listQuestionView"><i class="fa fa-circle-o"></i>Question List</a></li>
+              </ul>
+              <ul class="treeview-menu">
+                <li><a href="<%=request.getContextPath()%>/question/newQuestionView"><i class="fa fa-circle-o"></i>New Question</a></li>
               </ul>
             </li>
           </ul>

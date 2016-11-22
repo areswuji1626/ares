@@ -18,29 +18,29 @@ import ${package}.dao.${entityName}Dao;
 @Transactional
 public class ${entityName}ServiceImpl implements ${entityName}Service,DynamicDataSourceAble{
 
-	static{
-		DatabaseContextHolder.setDBType(DATA_SOURCE_1);
-	}
-
 	@Autowired
 	private ${entityName}Dao ${entityName?uncap_first}Dao;
 	
 	@Override
 	public List<${entityName}> getAll${entityName}(){
+		DatabaseContextHolder.setDBType(DATA_SOURCE_1);
 		return ${entityName?uncap_first}Dao.getAll${entityName}();
 	}
 	@Override
 	public ${entityName} get${entityName}ById(${entityName} ${entityName?uncap_first}){
+		DatabaseContextHolder.setDBType(DATA_SOURCE_1);
 		return ${entityName?uncap_first}Dao.get${entityName}ById(${entityName?uncap_first});
 	}
 
 	<#if primaryKey??>
 	@Override
 	public String insert${entityName}(${entityName} ${entityName?uncap_first}){
+		DatabaseContextHolder.setDBType(DATA_SOURCE_1);
 		return ${entityName?uncap_first}Dao.insert${entityName}(${entityName?uncap_first});
 	<#else>
 	@Override
 	public void insert${entityName}(${entityName} ${entityName?uncap_first}){
+		DatabaseContextHolder.setDBType(DATA_SOURCE_1);
 		${entityName?uncap_first}Dao.insert${entityName}(${entityName?uncap_first});
 	</#if>
 	}

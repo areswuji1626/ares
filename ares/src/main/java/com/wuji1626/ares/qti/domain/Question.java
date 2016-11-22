@@ -3,21 +3,27 @@ package com.wuji1626.ares.qti.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 public class Question implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 	/** question id */
 	private String questionId;
 	/** question text */
 	private String questionText;
 	/** create date */
+	@DateTimeFormat(pattern = "yyyy-MM-dd")  
 	private Date createDate;
 	/** modify date */
+	@DateTimeFormat(pattern = "yyyy-MM-dd")  
 	private Date modifyDate;
 	/** create peson */
 	private String createPesonId;
 	/** modify person */
 	private String modifyPersonId;
 	/** delete flag: 00: effective, 01: delete */
-	private String delFlg;
+	private String delFlg = "00";
 	
 	public String getQuestionId(){
 		return questionId;
