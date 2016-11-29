@@ -25,6 +25,7 @@
           </form>
           <!-- /.search form -->
           <!-- sidebar menu: : style can be found in sidebar.less -->
+          <!-- 
           <ul class="sidebar-menu">
             <li class="header">前台功能</li>
             <li class="treeview">
@@ -32,10 +33,11 @@
                 <i class="fa fa-dashboard"></i> <span>图片处理</span> <i class="fa fa-angle-left pull-right"></i>
               </a>
               <ul class="treeview-menu">
-                <li><a href="<%=request.getContextPath()%>/picoperation/uploadPicView"><i class="fa fa-circle-o"></i>上传图片</a></li>
+                <li><a href="request.getContextPath()%>/picoperation/uploadPicView"><i class="fa fa-circle-o"></i>上传图片</a></li>
               </ul>
             </li>
           </ul>
+           -->
           <ul class="sidebar-menu">
             <li class="header">QTI</li>
             <li class="treeview">

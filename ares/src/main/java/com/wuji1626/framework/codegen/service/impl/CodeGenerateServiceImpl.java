@@ -202,13 +202,17 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         //create data model（Map）  
         Map<String, Object> root = new HashMap<String, Object>();  
         Result<ColumnInfo> resPrimaryKey = metaService.getPrimaryColumn(config.getDs(), config.getTab());
+        Result<FieldInfo> fieldRes = convertDBColumn2Code(config.getDs(),config.getColumnList());
         // entity's package specify
         root.put("package", config.getPackageName());  
         root.put("entityName", config.getEntityName());  
-        root.put("primaryKey", resPrimaryKey.getResultSet().size()==1?resPrimaryKey.getResultSet().get(0).getColumn_name():"");
+        root.put("primaryKeys", convertPrimearyKeys2Fields(resPrimaryKey,fieldRes));
         Result<FieldInfo> pkGetter = convertDBColumn2Code(config.getDs(),resPrimaryKey.getResultSet());
         root.put("pkGetter", pkGetter.getResultSet().size()==1?pkGetter.getResultSet().get(0).getField_name():"");
-	        //get output stream with std io  
+        root.put("restId", convertPK2Rest(resPrimaryKey,fieldRes));
+        root.put("restParams", convertPK2RestParams(resPrimaryKey,fieldRes));
+//	    root.put("pkField", arg1);
+        //get output stream with std io  
         if(ValidateUtil.isBlank(config.getOutputPath())){
 			res.setStatus(CommonConstant.FAIL_ST);
 			res.setErrorCode(ErrorCode.NO_OUTPUT_PATH);
@@ -220,6 +224,52 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 		return controllerRes;  
 	}
 	
+	private List<FieldInfo> convertPrimearyKeys2Fields(Result<ColumnInfo> resPrimaryKey, Result<FieldInfo> fieldRes) {
+		// TODO Auto-generated method stub
+		List<FieldInfo> pkFields = new ArrayList<FieldInfo>();
+		for(ColumnInfo col:resPrimaryKey.getResultSet()){
+			for(FieldInfo field: fieldRes.getResultSet()){
+				if(field.getColumn_name().equals(col.getColumn_name())){
+					pkFields.add(field);
+				}
+			}
+		}
+		return pkFields;
+	}
+
+	protected String convertPK2Rest(Result<ColumnInfo> resPrimaryKey, Result<FieldInfo> fieldRes) {
+		// TODO Auto-generated method stub
+		StringBuffer buf = new StringBuffer();
+		for(ColumnInfo col:resPrimaryKey.getResultSet()){
+			for(FieldInfo field: fieldRes.getResultSet()){
+				if(field.getColumn_name().equals(col.getColumn_name())){
+					buf.append("/{");
+					buf.append(field.getField_name());
+					buf.append("}");
+				}
+			}
+		}
+		return buf.toString();
+	}
+	
+	protected String convertPK2RestParams(Result<ColumnInfo> resPrimaryKey, Result<FieldInfo> fieldRes) {
+		// TODO Auto-generated method stub
+		StringBuffer buf = new StringBuffer();
+		for(ColumnInfo col:resPrimaryKey.getResultSet()){
+			for(FieldInfo field: fieldRes.getResultSet()){
+				if(field.getColumn_name().equals(col.getColumn_name())){
+					buf.append("@PathVariable(\"");
+					buf.append(field.getField_name());
+					buf.append("\") ");
+					buf.append(field.getData_type() + " ");
+					buf.append(field.getField_name() + ",");
+				}
+			}
+			
+		}
+		return buf.toString().substring(0, buf.length()-1);
+	}
+
 	protected String convertSelectFieldsStr(List<FieldInfo> cols){
 		StringBuffer buf = new StringBuffer();
 		for(FieldInfo col:cols){

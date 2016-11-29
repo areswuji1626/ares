@@ -24,4 +24,8 @@
 	</selectKey>
     insert into question (question_id,question_text,create_date,modify_date,create_peson_id,modify_person_id,del_flg) values (uuid(),#{questionText},sysdate(),sysdate(),#{createPesonId},#{modifyPersonId},#{delFlg})
 </insert>
+
+<update id="deleteQuestion" parameterType="com.wuji1626.ares.qti.domain.Question">
+	update question set del_flg = '01' where question_id = #{questionId} 
+</update>
 </mapper>

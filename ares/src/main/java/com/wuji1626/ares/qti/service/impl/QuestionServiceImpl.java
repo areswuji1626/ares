@@ -18,7 +18,6 @@ import com.wuji1626.ares.qti.dao.QuestionDao;
 @Transactional
 public class QuestionServiceImpl implements QuestionService,DynamicDataSourceAble{
 
-
 	@Autowired
 	private QuestionDao questionDao;
 	
@@ -37,5 +36,11 @@ public class QuestionServiceImpl implements QuestionService,DynamicDataSourceAbl
 	public String insertQuestion(Question question){
 		DatabaseContextHolder.setDBType(DATA_SOURCE_3);
 		return questionDao.insertQuestion(question);
+	}
+	
+	@Override
+	public void deleteQuestion(Question question){
+		DatabaseContextHolder.setDBType(DATA_SOURCE_3);
+		questionDao.deleteQuestion(question);
 	}
 }

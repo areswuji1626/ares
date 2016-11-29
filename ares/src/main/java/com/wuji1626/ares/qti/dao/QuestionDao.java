@@ -7,4 +7,5 @@ public interface QuestionDao{
 	public List<Question> getAllQuestion();
 	public Question getQuestionById(Question question);
 	public String insertQuestion(Question question);
+	public void deleteQuestion(Question question);
 }

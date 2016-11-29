@@ -35,6 +35,17 @@ public class ${entityName}Controller{
 		return "list${entityName}";
 	}
 	
+	@RequestMapping(value = "/delete${entityName}${restId}", method=RequestMethod.GET) 
+	public String delete${entityName}(${restParams}) {
+		${entityName} ${entityName?uncap_first} = new ${entityName}();
+		<#list primaryKeys as field>
+		${entityName?uncap_first}.set${field.field_name?cap_first}(${field.field_name});
+		</#list>
+		questionService.delete${entityName}(${entityName?uncap_first});
+		
+		return "redirect:../list${entityName}View";
+	}
+	
 	@RequestMapping("/list${entityName}View")
 	public ModelAndView list${entityName}View(Model model){
 		List<${entityName}> ${entityName?uncap_first}List = ${entityName?uncap_first}Service.getAll${entityName}();

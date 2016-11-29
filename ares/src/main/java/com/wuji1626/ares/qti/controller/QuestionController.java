@@ -35,6 +35,15 @@ public class QuestionController{
 		return "listQuestion";
 	}
 	
+	@RequestMapping(value = "/deleteQuestion/{questionId}", method=RequestMethod.GET) 
+	public String deleteQuestion(@PathVariable("questionId") String questionId) {
+		Question question = new Question();
+		question.setQuestionId(questionId);
+		questionService.deleteQuestion(question);
+		
+		return "redirect:../listQuestionView";
+	}
+	
 	@RequestMapping("/listQuestionView")
 	public ModelAndView listQuestionView(Model model){
 		List<Question> questionList = questionService.getAllQuestion();

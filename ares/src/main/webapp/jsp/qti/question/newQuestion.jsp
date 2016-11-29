@@ -59,7 +59,7 @@
                 </div><!-- /.box-header -->
                 <div class="box box-info">
 					<div class="box-header with-border">
-						<s:form modelAttribute="questionModel" method="post" action="./saveQuestion" class="form-horizontal" id="question_form">
+						<s:form modelAttribute="questionModel" method="post" action="./insertQuestion" class="form-horizontal" id="question_form">
 						<div class="form-group">
 							<label for="user_name" class="col-sm-4 control-label">Question Text</label>
 							<div class="col-sm-6">

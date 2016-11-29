@@ -40,5 +40,12 @@ public class QuestionDaoTest {
 		DatabaseContextHolder.setDBType(originalDBType);
 		Assert.assertEquals(question.getDelFlg(),"00");
 	}
-	
+	@Test
+	public void deleteQuestionTest(){
+		Question question = new Question();
+		question.setQuestionId("6b27502c-aaba-11e6-a458-00ff794963ca");
+		DatabaseContextHolder.setDBType(DynamicDataSourceAble.DATA_SOURCE_3);
+		dao.deleteQuestion(question);
+		Assert.assertEquals(null, dao.getQuestionById(question));;
+	}
 }

@@ -14,6 +14,7 @@ public class ${entityName}DaoImpl implements ${entityName}Dao{
 	public static final String GET_ALL_${entityName?upper_case} = "getAll${entityName}";
 	public static final String GET_${entityName?upper_case}_BY_ID = "get${entityName}ById";
 	public static final String INSERT_${entityName?upper_case} = "insert${entityName}";
+	public static final String DELETE_${entityName?upper_case} = "delete${entityName}";
 
 	@Autowired
 	private SqlSessionTemplate sqlSessionTemplate;
@@ -37,5 +38,9 @@ public class ${entityName}DaoImpl implements ${entityName}Dao{
 	public void insert${entityName}(${entityName} ${entityName?uncap_first}){
 		sqlSessionTemplate.insert(INSERT_${entityName?upper_case}, ${entityName?uncap_first});
 	</#if>
+	}
+	@Override
+	public void delete${entityName}(${entityName} ${entityName?uncap_first}){
+		sqlSessionTemplate.update(DELETE_${entityName?upper_case}, ${entityName?uncap_first});
 	}
 }

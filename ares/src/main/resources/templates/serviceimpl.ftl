@@ -44,4 +44,10 @@ public class ${entityName}ServiceImpl implements ${entityName}Service,DynamicDat
 		${entityName?uncap_first}Dao.insert${entityName}(${entityName?uncap_first});
 	</#if>
 	}
+	
+	@Override
+	public void delete${entityName}(${entityName} ${entityName?uncap_first}){
+		DatabaseContextHolder.setDBType(DATA_SOURCE_1);
+		${entityName?uncap_first}Dao.delete${entityName}(${entityName?uncap_first});
+	}
 }

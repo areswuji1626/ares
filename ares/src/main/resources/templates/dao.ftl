@@ -11,4 +11,5 @@ public interface ${entityName}Dao{
 	<#else>
 	public void insert${entityName}(${entityName} ${entityName?uncap_first});	
 	</#if>
+	public void delete${entityName}(${entityName} ${entityName?uncap_first});
 }

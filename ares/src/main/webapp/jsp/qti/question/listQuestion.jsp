@@ -139,7 +139,7 @@
 		</td>
 		<td>
 			<a class="btn btn-default pull-left" href="<%=request.getContextPath()%>/question/editQuestion/{{questionId}}">edit</a>
-			<a class="btn btn-default pull-right" href="<%=request.getContextPath()%>/question/deleteQuestion/{{qustionId}}">delete</a>
+			<a class="btn btn-default pull-right" href="<%=request.getContextPath()%>/question/deleteQuestion/{{questionId}}">delete</a>
 		</td>
 	</tr>  
 	{{/resultSet}}
