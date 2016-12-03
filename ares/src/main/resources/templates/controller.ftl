@@ -41,9 +41,25 @@ public class ${entityName}Controller{
 		<#list primaryKeys as field>
 		${entityName?uncap_first}.set${field.field_name?cap_first}(${field.field_name});
 		</#list>
-		questionService.delete${entityName}(${entityName?uncap_first});
+		${entityName?uncap_first}Service.delete${entityName}(${entityName?uncap_first});
 		
 		return "redirect:../list${entityName}View";
+	}
+	@RequestMapping(value = "/save${entityName}", method=RequestMethod.POST) 
+	public String save${entityName}(@ModelAttribute("${entityName?uncap_first}") ${entityName} ${entityName?uncap_first}) {
+		${entityName?uncap_first}Service.update${entityName}(${entityName?uncap_first});
+		return "list${entityName}";
+	}
+	
+	@RequestMapping(value = "/edit${entityName}${restId}", method=RequestMethod.GET) 
+	public ModelAndView edit${entityName}(${restParams}, Model model) {
+		${entityName} ${entityName?uncap_first} = new ${entityName}();
+		<#list primaryKeys as field>
+		${entityName?uncap_first}.set${field.field_name?cap_first}(${field.field_name});
+		</#list>
+		${entityName?uncap_first} = ${entityName?uncap_first}Service.get${entityName}ById(${entityName?uncap_first});
+		model.addAttribute("${entityName?uncap_first}Model",${entityName?uncap_first});
+		return new ModelAndView("/qti/${entityName?uncap_first}/edit${entityName}");
 	}
 	
 	@RequestMapping("/list${entityName}View")

@@ -43,6 +43,20 @@ public class QuestionController{
 		
 		return "redirect:../listQuestionView";
 	}
+	@RequestMapping(value = "/saveQuestion", method=RequestMethod.POST) 
+	public String saveQuestion(@ModelAttribute("question") Question question) {
+		questionService.updateQuestion(question);
+		return "listQuestion";
+	}
+	
+	@RequestMapping(value = "/editQuestion/{questionId}", method=RequestMethod.GET) 
+	public ModelAndView editQuestion(@PathVariable("questionId") String questionId, Model model) {
+		Question question = new Question();
+		question.setQuestionId(questionId);
+		question = questionService.getQuestionById(question);
+		model.addAttribute("questionModel",question);
+		return new ModelAndView("/qti/question/editQuestion");
+	}
 	
 	@RequestMapping("/listQuestionView")
 	public ModelAndView listQuestionView(Model model){

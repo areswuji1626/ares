@@ -46,6 +46,15 @@ public class QuestionDaoTest {
 		question.setQuestionId("6b27502c-aaba-11e6-a458-00ff794963ca");
 		DatabaseContextHolder.setDBType(DynamicDataSourceAble.DATA_SOURCE_3);
 		dao.deleteQuestion(question);
-		Assert.assertEquals(null, dao.getQuestionById(question));;
+		Assert.assertEquals(null, dao.getQuestionById(question));
+	}
+	@Test
+	public void updateQuestionTest(){
+		Question question = new Question();
+		question.setQuestionId("55614d35-b270-11e6-9dce-00ff794963ca");
+		question.setQuestionText("this is a test about update");
+		DatabaseContextHolder.setDBType(DynamicDataSourceAble.DATA_SOURCE_3);
+		dao.updateQuestion(question);
+		Assert.assertEquals("this is a test about update", dao.getQuestionById(question).getQuestionText());
 	}
 }

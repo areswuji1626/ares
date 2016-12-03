@@ -15,6 +15,7 @@ public class QuestionDaoImpl implements QuestionDao{
 	public static final String GET_QUESTION_BY_ID = "getQuestionById";
 	public static final String INSERT_QUESTION = "insertQuestion";
 	public static final String DELETE_QUESTION = "deleteQuestion";
+	public static final String UPDATE_QUESTION = "updateQuestion";
 
 	@Autowired
 	private SqlSessionTemplate sqlSessionTemplate;
@@ -36,5 +37,10 @@ public class QuestionDaoImpl implements QuestionDao{
 	@Override
 	public void deleteQuestion(Question question){
 		sqlSessionTemplate.update(DELETE_QUESTION, question);
+	}
+	
+	@Override
+	public void updateQuestion(Question question){
+		sqlSessionTemplate.update(UPDATE_QUESTION, question);
 	}
 }

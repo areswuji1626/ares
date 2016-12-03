@@ -50,4 +50,10 @@ public class ${entityName}ServiceImpl implements ${entityName}Service,DynamicDat
 		DatabaseContextHolder.setDBType(DATA_SOURCE_1);
 		${entityName?uncap_first}Dao.delete${entityName}(${entityName?uncap_first});
 	}
+	
+	@Override
+	public void update${entityName}(${entityName} ${entityName?uncap_first}){
+		DatabaseContextHolder.setDBType(DATA_SOURCE_1);
+		${entityName?uncap_first}Dao.update${entityName}(${entityName?uncap_first});
+	}
 }

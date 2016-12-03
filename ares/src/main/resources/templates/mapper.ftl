@@ -36,5 +36,11 @@
 <update id="delete${entityName}" parameterType="${package}.domain.${entityName}">
 	update ${tab.table_name?lower_case} set del_flg = '01' where ${pkCondition}
 </update>
+
+<update id="update${entityName}" parameterType="${package}.domain.${entityName}">
+	update ${tab.table_name?lower_case} set 
+	${updateStr} 
+	where ${pkCondition}
+</update>
 </mapper>
   

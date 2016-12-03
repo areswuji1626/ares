@@ -88,6 +88,7 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         Result<FieldInfo> pkGetter = convertDBColumn2Code(config.getDs(),primaryKeyRes.getResultSet());
         root.put("pkGetter", pkGetter.getResultSet().size()==1?pkGetter.getResultSet().get(0).getField_name():"");
         root.put("insertStr", convertInsertStr(config, fieldRes.getResultSet(), primaryKeyRes.getResultSet()));
+        root.put("updateStr", convertUpdateStr(config, fieldRes.getResultSet(), primaryKeyRes.getResultSet()));
         // to keep style, table's name is lowcase
         root.put("tab", config.getTab());
         //获取输出流（指定到控制台（标准输出））  
@@ -103,7 +104,45 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         return res;
         
 	}
-	
+
+	protected String convertUpdateStr(GenerateConfig config, List<FieldInfo> fields, List<ColumnInfo> pkFields) {
+		// TODO Auto-generated method stub
+		StringBuffer buf = new StringBuffer();
+		for(FieldInfo field:fields){
+			// pk fields or exempt fields are not updated
+			if(!isPkField(field,pkFields)&&!isExemptFields(field)){
+				// modify_date field is just updated to the real time update issued
+				if(field.getColumn_name().equals("modify_date")){
+					buf.append(field.getColumn_name());
+					buf.append(CommonConstant.EQUAL);
+					buf.append(getSysdateStatement(config));
+					buf.append(CommonConstant.COMMA);
+				}else{
+					buf.append(field.getColumn_name());
+					buf.append(CommonConstant.EQUAL);
+					buf.append("#{").append(field.getField_name()).append("},");
+				}
+			}
+		}
+		return buf.substring(0, buf.length()-1);
+	}
+	private boolean isExemptFields(FieldInfo field) {
+		// TODO Auto-generated method stub
+		if(field.getColumn_name().equals("create_date")||
+				field.getColumn_name().equals("del_flg")){
+			return true;
+		}
+		return false;
+	}
+
+	private boolean isPkField(FieldInfo field, List<ColumnInfo> pkFields){
+		for(ColumnInfo pkField:pkFields){
+			if(pkField.getColumn_name().equals(field.getColumn_name())){
+				return true;
+			}
+		}
+		return false;
+	}
 
 	@Override
 	public Result<String> generateDao(GenerateConfig config) {
