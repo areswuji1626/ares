@@ -28,4 +28,10 @@
 <update id="deleteQuestion" parameterType="com.wuji1626.ares.qti.domain.Question">
 	update question set del_flg = '01' where question_id = #{questionId} 
 </update>
+
+<update id="updateQuestion" parameterType="com.wuji1626.ares.qti.domain.Question">
+	update question set 
+	question_text=#{questionText},modify_date=sysdate(),create_peson_id=#{createPesonId},modify_person_id=#{modifyPersonId} 
+	where question_id = #{questionId} 
+</update>
 </mapper>

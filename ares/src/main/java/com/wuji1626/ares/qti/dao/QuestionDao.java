@@ -8,4 +8,6 @@ public interface QuestionDao{
 	public Question getQuestionById(Question question);
 	public String insertQuestion(Question question);
 	public void deleteQuestion(Question question);
+	
+	public void updateQuestion(Question question);
 }

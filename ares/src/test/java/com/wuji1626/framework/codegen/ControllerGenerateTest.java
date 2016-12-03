@@ -49,6 +49,7 @@ public class ControllerGenerateTest {
 		
 		GenerateConfig config = new GenerateConfig();
 		config.setPackageName("com.wuji1626.ares.qti");
+		config.setModuleName("qti");
 		config.setEntityName("Question");
 		config.setColumnList(res.getResultSet());
 		config.setDs(ds);

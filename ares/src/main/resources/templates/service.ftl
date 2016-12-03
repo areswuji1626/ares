@@ -12,4 +12,5 @@ public interface ${entityName}Service{
 	public void insert${entityName}(${entityName} ${entityName?uncap_first});	
 	</#if>
 	public void delete${entityName}(${entityName} ${entityName?uncap_first});
+	public void update${entityName}(${entityName} ${entityName?uncap_first});
 }

@@ -43,4 +43,10 @@ public class QuestionServiceImpl implements QuestionService,DynamicDataSourceAbl
 		DatabaseContextHolder.setDBType(DATA_SOURCE_3);
 		questionDao.deleteQuestion(question);
 	}
+	
+	@Override
+	public void updateQuestion(Question question){
+		DatabaseContextHolder.setDBType(DATA_SOURCE_3);
+		questionDao.updateQuestion(question);
+	}
 }
