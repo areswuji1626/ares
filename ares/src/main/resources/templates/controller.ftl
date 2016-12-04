@@ -48,7 +48,7 @@ public class ${entityName}Controller{
 	@RequestMapping(value = "/save${entityName}", method=RequestMethod.POST) 
 	public String save${entityName}(@ModelAttribute("${entityName?uncap_first}") ${entityName} ${entityName?uncap_first}) {
 		${entityName?uncap_first}Service.update${entityName}(${entityName?uncap_first});
-		return "list${entityName}";
+		return "redirect:./list${entityName}View";
 	}
 	
 	@RequestMapping(value = "/edit${entityName}${restId}", method=RequestMethod.GET) 

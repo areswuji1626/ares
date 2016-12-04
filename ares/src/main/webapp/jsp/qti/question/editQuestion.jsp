@@ -45,7 +45,7 @@
           <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
             <li><a href="#">Question</a></li>
-            <li class="active">New Question</li>
+            <li class="active">Edit Question</li>
           </ol>
         </section>
 
@@ -59,12 +59,13 @@
                 </div><!-- /.box-header -->
                 <div class="box box-info">
 					<div class="box-header with-border">
-						<s:form modelAttribute="questionModel" method="post" action="./updateQuestion" class="form-horizontal" id="question_form">
+						<s:form modelAttribute="questionModel" method="post" action="../saveQuestion" class="form-horizontal" id="question_form">
 						<div class="form-group">
 							<label for="user_name" class="col-sm-4 control-label">Question Text</label>
 							<div class="col-sm-6">
 							<s:textarea class="form-control" rows="3" id="questionText" path="questionText" placeholder="Question Text"></s:textarea>
 							</div>
+							<s:input type="hidden" path="questionId" id="questionId"/>
 						</div>
 						<div class="box-footer">
                     		<button type="submit" class="btn btn-default pull-right" id="cancel">Cancel</button>

@@ -46,7 +46,7 @@ public class QuestionController{
 	@RequestMapping(value = "/saveQuestion", method=RequestMethod.POST) 
 	public String saveQuestion(@ModelAttribute("question") Question question) {
 		questionService.updateQuestion(question);
-		return "listQuestion";
+		return "redirect:./listQuestionView";
 	}
 	
 	@RequestMapping(value = "/editQuestion/{questionId}", method=RequestMethod.GET) 
