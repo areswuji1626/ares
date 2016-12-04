@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wuji1626.ares.qti。domain.QuestionPart">
+
+<select id="getAllQuestionPart" resultType="com.wuji1626.ares.qti.domain.QuestionPart">
+	select question_part_id questionPartId,question_id questionId,question_part_title questionPartTitle,question_type questionType,question_pst_form questionPstForm,question_pst_subform questionPstSubform,subject_area subjectArea,question_player questionPlayer,file_used_by_player fileUsedByPlayer,target_label_text targetLabelText,target_answer_text targetAnswerText,create_date createDate,modify_date modifyDate,create_peson_id createPesonId,modify_person_id modifyPersonId,del_flg delFlg
+	from question_part
+	where del_flg != '01'
+	order by create_date desc
+</select>
+<select id="getQuestionPartById" parameterType="com.wuji1626.ares.qti.domain.QuestionPart" resultType="com.wuji1626.ares.qti.domain.QuestionPart">
+	select question_part_id questionPartId,question_id questionId,question_part_title questionPartTitle,question_type questionType,question_pst_form questionPstForm,question_pst_subform questionPstSubform,subject_area subjectArea,question_player questionPlayer,file_used_by_player fileUsedByPlayer,target_label_text targetLabelText,target_answer_text targetAnswerText,create_date createDate,modify_date modifyDate,create_peson_id createPesonId,modify_person_id modifyPersonId,del_flg delFlg
+	from question_part
+	where del_flg != '01'
+	and ( question_part_id = #{questionPartId}  )
+	order by create_date desc
+</select>
+	
+<insert id="insertQuestionPart" parameterType="com.wuji1626.ares.qti.domain.QuestionPart">
+    <selectKey order="AFTER" keyProperty="questionPartId" resultType="java.lang.String">
+		SELECT question_part_id from question_part order by modify_date limit 1;
+	</selectKey>
+    insert into question_part (question_part_id,question_id,question_part_title,question_type,question_pst_form,question_pst_subform,subject_area,question_player,file_used_by_player,target_label_text,target_answer_text,create_date,modify_date,create_peson_id,modify_person_id,del_flg) values (uuid(),#{questionId},#{questionPartTitle},#{questionType},#{questionPstForm},#{questionPstSubform},#{subjectArea},#{questionPlayer},#{fileUsedByPlayer},#{targetLabelText},#{targetAnswerText},sysdate(),sysdate(),#{createPesonId},#{modifyPersonId},#{delFlg})
+</insert>
+
+<update id="deleteQuestionPart" parameterType="com.wuji1626.ares.qti.domain.QuestionPart">
+	update question_part set del_flg = '01' where question_part_id = #{questionPartId} 
+</update>
+
+<update id="updateQuestionPart" parameterType="com.wuji1626.ares.qti.domain.QuestionPart">
+	update question_part set 
+	question_id=#{questionId},question_part_title=#{questionPartTitle},question_type=#{questionType},question_pst_form=#{questionPstForm},question_pst_subform=#{questionPstSubform},subject_area=#{subjectArea},question_player=#{questionPlayer},file_used_by_player=#{fileUsedByPlayer},target_label_text=#{targetLabelText},target_answer_text=#{targetAnswerText},modify_date=sysdate(),create_peson_id=#{createPesonId},modify_person_id=#{modifyPersonId} 
+	where question_part_id = #{questionPartId} 
+</update>
+</mapper>

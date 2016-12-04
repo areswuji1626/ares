@@ -43,14 +43,14 @@ public class ControllerGenerateTest {
 		
 		TableInfo tab = new TableInfo();
 		tab.setDs_name("QTI Database");
-		tab.setTable_name("question");
+		tab.setTable_name("question_part");
 		
 		Result<ColumnInfo> res = metaService.listColumn(ds, tab);
 		
 		GenerateConfig config = new GenerateConfig();
 		config.setPackageName("com.wuji1626.ares.qti");
 		config.setModuleName("qti");
-		config.setEntityName("Question");
+		config.setEntityName("QuestionPart");
 		config.setColumnList(res.getResultSet());
 		config.setDs(ds);
 		config.setTab(tab);

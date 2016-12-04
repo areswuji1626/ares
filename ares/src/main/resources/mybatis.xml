@@ -9,5 +9,6 @@
         <mapper resource="mybatis/codeMapper.xml" />
         <mapper resource="mybatis/codegenMapper.xml" />
         <mapper resource="mybatis/qti/questionMapper.xml" />
+        <mapper resource="mybatis/qti/questionpartMapper.xml" />
     </mappers>  
 </configuration>

@@ -81,7 +81,7 @@ public class ${entityName}Controller{
 
 	@RequestMapping("/new${entityName}View")
 	public ModelAndView new${entityName}View(Model model){
-		${entityName} question = new ${entityName}();
+		${entityName} ${entityName?uncap_first} = new ${entityName}();
 		model.addAttribute("${entityName?uncap_first}Model",${entityName?uncap_first});
 		// Results
 		Result<String> res = new Result<String>();
