@@ -67,7 +67,7 @@
 							</div>
 						</div>
 						<div class="box-footer">
-                    		<button type="submit" class="btn btn-default pull-right" id="cancel">Cancel</button>
+                    		<button type="reset" class="btn btn-default pull-right" id="cancel">Cancel</button>
                     		<button type="submit" class="btn btn-info pull-right" id="submit">Save</button>
                   		</div><!-- /.box-footer -->
 						</s:form>

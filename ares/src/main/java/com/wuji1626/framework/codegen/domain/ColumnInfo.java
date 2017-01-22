@@ -13,8 +13,13 @@ public class ColumnInfo implements Serializable {
 	private String comments;
 	private boolean isInsert = true;
 	private boolean isShow = true;
+	/** asc:ascend, desc descend */
 	private String order_flg = "";
 	private boolean isCondition = false;
+	/** codelist: codelist reference
+	  	business: business logic reference */
+	private String ref_flg = "";
+	
 	public String getTable_name() {
 		return table_name;
 	}
@@ -69,6 +74,12 @@ public class ColumnInfo implements Serializable {
 	}
 	public void setCondition(boolean isCondition) {
 		this.isCondition = isCondition;
+	}
+	public String getRef_flg() {
+		return ref_flg;
+	}
+	public void setRef_flg(String ref_flg) {
+		this.ref_flg = ref_flg;
 	}
 	
 }

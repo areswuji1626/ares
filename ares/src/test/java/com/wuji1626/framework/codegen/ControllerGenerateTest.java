@@ -1,5 +1,7 @@
 package com.wuji1626.framework.codegen;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import com.wuji1626.framework.codegen.domain.TableInfo;
 import com.wuji1626.framework.codegen.service.CodeGenerateService;
 import com.wuji1626.framework.codegen.service.DBMetaDataService;
 import com.wuji1626.framework.codegen.service.GenerateConfigService;
+import com.wuji1626.framework.codegen.util.CodeGenerateUtil;
 import com.wuji1626.framework.constant.CommonConstant;
 import com.wuji1626.framework.result.Result;
 
@@ -51,6 +54,8 @@ public class ControllerGenerateTest {
 		config.setPackageName("com.wuji1626.ares.qti");
 		config.setModuleName("qti");
 		config.setEntityName("QuestionPart");
+		List<ColumnInfo> columnList = res.getResultSet();
+		CodeGenerateUtil.setColumnRefFlg(columnList,"question_type",CodeGenerateUtil.CODELIST_REF_FLG);
 		config.setColumnList(res.getResultSet());
 		config.setDs(ds);
 		config.setTab(tab);

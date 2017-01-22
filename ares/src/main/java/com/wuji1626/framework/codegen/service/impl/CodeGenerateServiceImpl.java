@@ -21,6 +21,7 @@ import com.wuji1626.framework.codegen.domain.GenerateConfig;
 import com.wuji1626.framework.codegen.service.CodeGenerateService;
 import com.wuji1626.framework.codegen.service.DBMetaDataService;
 import com.wuji1626.framework.codegen.service.GenerateConfigService;
+import com.wuji1626.framework.codegen.util.CodeGenerateUtil;
 import com.wuji1626.framework.constant.CommonConstant;
 import com.wuji1626.framework.constant.ErrorCode;
 import com.wuji1626.framework.result.Result;
@@ -250,6 +251,9 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
         root.put("pkGetter", pkGetter.getResultSet().size()==1?pkGetter.getResultSet().get(0).getField_name():"");
         root.put("restId", convertPK2Rest(resPrimaryKey,fieldRes));
         root.put("restParams", convertPK2RestParams(resPrimaryKey,fieldRes));
+        
+        root.put("codelistRef", getRefColumns(config.getColumnList(), fieldRes.getResultSet(), CodeGenerateUtil.CODELIST_REF_FLG));
+        root.put("businessRef", getRefColumns(config.getColumnList(), fieldRes.getResultSet(), CodeGenerateUtil.BUSINESS_REF_FLG));
 //	    root.put("pkField", arg1);
         //get output stream with std io  
         if(ValidateUtil.isBlank(config.getOutputPath())){
@@ -644,5 +648,15 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
 		}
 		return buf.substring(0, buf.length()-4);
 	}
-
+	protected List<FieldInfo> getRefColumns(List<ColumnInfo> cols,List<FieldInfo> fields,String ref_flg){
+		List<FieldInfo> codelistRefColumnList = new ArrayList<FieldInfo>();
+		for(FieldInfo field:fields){
+			for(ColumnInfo col:cols){
+				if(col.getRef_flg().equals(ref_flg)||col.getColumn_name().equals(field.getColumn_name())){
+					codelistRefColumnList.add(field);
+				}
+			}
+		}
+		return codelistRefColumnList;
+	}
 }

@@ -40,7 +40,7 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
           <h1>
-            New Question
+            Edit Question
           </h1>
           <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -68,7 +68,7 @@
 							<s:input type="hidden" path="questionId" id="questionId"/>
 						</div>
 						<div class="box-footer">
-                    		<button type="submit" class="btn btn-default pull-right" id="cancel">Cancel</button>
+                    		<button type="reset" class="btn btn-default pull-right" id="cancel">Cancel</button>
                     		<button type="submit" class="btn btn-info pull-right" id="submit">Save</button>
                   		</div><!-- /.box-footer -->
 						</s:form>

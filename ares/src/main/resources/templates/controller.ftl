@@ -20,6 +20,9 @@ import ${package}.service.${entityName}Service;
 
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
+<#if (codelistRef?size>0)>
+import com.wuji1626.framework.support.code.service.CodeService;
+</#if>
 
 @Controller
 @RequestMapping("/${entityName?lower_case}")
@@ -27,6 +30,11 @@ public class ${entityName}Controller{
 
 	@Autowired
 	private ${entityName}Service ${entityName?uncap_first}Service;
+	
+	<#if (codelistRef?size>0)>
+	@Autowired
+	private CodeService codeService;
+	</#if>
 	
 	@RequestMapping(value = "/insert${entityName}", method=RequestMethod.POST) 
 	public String insert${entityName}(@ModelAttribute("${entityName?uncap_first}") ${entityName} ${entityName?uncap_first}) {
@@ -81,6 +89,7 @@ public class ${entityName}Controller{
 
 	@RequestMapping("/new${entityName}View")
 	public ModelAndView new${entityName}View(Model model){
+		
 		${entityName} ${entityName?uncap_first} = new ${entityName}();
 		model.addAttribute("${entityName?uncap_first}Model",${entityName?uncap_first});
 		// Results
